@@ -41,33 +41,27 @@ public class EmperorTrumpApplication {
 		twitter4j.Twitter twitter = tf.getInstance();
 
 		//twitter streaming input
-
 		TwitterStream twitterStream = new TwitterStreamFactory(new ConfigurationBuilder().setJSONStoreEnabled(true).build()).getInstance();
 		twitterStream.setOAuthConsumer(TwitterKeys.consumerKey, TwitterKeys.consumerSecret);
 		twitterStream.setOAuthAccessToken(new AccessToken(TwitterKeys.accessTokenKey, TwitterKeys.accessTokenSecret));
-
 		StatusListener listener = new StatusListener() {
 		public void onStatus(Status status) {
 		TrumpTweet tweet = new TrumpTweet(status.getText());
 		trumpTweetsDao.save(tweet);
 		}
-
 		public void onStallWarning(StallWarning stallWarning) {
 		}
-
 		public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
 		}
-
 		public void onScrubGeo(long longitund, long latitude) {
 		}
-
 		public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
 		}
-
 		public void onException(Exception ex) {
 		ex.printStackTrace();
 		}
 		};
+
 		twitterStream.addListener(listener);
 		FilterQuery query = new FilterQuery();
 		query.follow(new long[] {25073877});
