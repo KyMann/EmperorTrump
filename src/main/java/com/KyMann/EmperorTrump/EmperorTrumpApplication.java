@@ -26,6 +26,8 @@ public class EmperorTrumpApplication {
 	@Autowired
 	private static EmperorTweetsDao emperorTweetsDao;
 	private static TrumpTweetsDao trumpTweetsDao;
+	private static Boolean streamOn = false;
+	private static Boolean pushTweet = false;
 
 	public static void main(String[] args) throws TwitterException {
 
@@ -41,31 +43,39 @@ public class EmperorTrumpApplication {
 		twitter4j.Twitter twitter = tf.getInstance();
 
 		//twitter streaming input
-		TwitterStream twitterStream = new TwitterStreamFactory(new ConfigurationBuilder().setJSONStoreEnabled(true).build()).getInstance();
-		twitterStream.setOAuthConsumer(TwitterKeys.consumerKey, TwitterKeys.consumerSecret);
-		twitterStream.setOAuthAccessToken(new AccessToken(TwitterKeys.accessTokenKey, TwitterKeys.accessTokenSecret));
-		StatusListener listener = new StatusListener() {
-		public void onStatus(Status status) {
-		TrumpTweet tweet = new TrumpTweet(status.getText());
-		trumpTweetsDao.save(tweet);
-		}
-		public void onStallWarning(StallWarning stallWarning) {
-		}
-		public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-		}
-		public void onScrubGeo(long longitund, long latitude) {
-		}
-		public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-		}
-		public void onException(Exception ex) {
-		ex.printStackTrace();
-		}
-		};
+		if (streamOn) {
+			TwitterStream twitterStream = new TwitterStreamFactory(new ConfigurationBuilder().setJSONStoreEnabled(true).build()).getInstance();
+			twitterStream.setOAuthConsumer(TwitterKeys.consumerKey, TwitterKeys.consumerSecret);
+			twitterStream.setOAuthAccessToken(new AccessToken(TwitterKeys.accessTokenKey, TwitterKeys.accessTokenSecret));
+			StatusListener listener = new StatusListener() {
+				public void onStatus(Status status) {
+					TrumpTweet tweet = new TrumpTweet(status.getText());
+					trumpTweetsDao.save(tweet); //TODO: fix the database so that it will save
+				}
 
-		twitterStream.addListener(listener);
-		FilterQuery query = new FilterQuery();
-		query.follow(new long[] {25073877});
-		twitterStream.filter(query);
+				public void onStallWarning(StallWarning stallWarning) {
+				}
+
+				public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+				}
+
+				public void onScrubGeo(long longitund, long latitude) {
+				}
+
+				public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+				}
+
+				public void onException(Exception ex) {
+					ex.printStackTrace();
+				}
+			};
+
+			twitterStream.addListener(listener);
+			FilterQuery query = new FilterQuery();
+			query.follow(new long[]{25073877});
+			twitterStream.filter(query);
+		}
+
 
 		//pageNum controls pages back into tweet history, might need to increment at some point, certain how to prevent repeats as tweets move back through the list
 		//count is how many tweets per page, max 100
@@ -78,6 +88,7 @@ public class EmperorTrumpApplication {
 
 			for (Status s : status) {
 				TrumpTweet trumpTweet = new TrumpTweet(s.getText());
+				System.out.println(trumpTweet);
 				trumpTweetsDao.save(trumpTweet);
 			}
 		}
@@ -95,7 +106,7 @@ public class EmperorTrumpApplication {
 			//
 			if (empTweet.getChanges() != 0) {
 				//System.out.println(s.getUser().getName() + " " + s.getText());
-				//System.out.println(empTweet.getTweet() + ", " +  String.valueOf(empTweet.getChanges()));
+				System.out.println(empTweet.getTweet() + ", " +  String.valueOf(empTweet.getChanges()));
 
 				emperorTweetsDao.save(empTweet);
 			}
@@ -105,25 +116,30 @@ public class EmperorTrumpApplication {
 		SpringApplication.run(EmperorTrumpApplication.class, args);
 
 		//TODO: check occasionally and post(and remove from database) approved tweets using set interval
-		TimerTask pushTweet = new TimerTask() {
-			public void run() {pushTweet(twitter);}
-		};
-		Timer tweetTimer = new Timer();
-		tweetTimer.schedule(pushTweet, 1, 7200000); //
+		if (pushTweet) {
+		    TimerTask pushTweet = new TimerTask() {
+                public void run() {pushTweet(twitter);}
+            };
+            Timer tweetTimer = new Timer();
+            tweetTimer.schedule(pushTweet, 1, 7200000); //
+        }
+
 	}
 
-	public static void pushTweet(Twitter twitter) {
-		for (EmperorTweet tweet : emperorTweetsDao.findAll()) {
-			if (tweet.isApproved()) {
-				try {
-					twitter.updateStatus(tweet.getTweet());
-					emperorTweetsDao.delete(tweet.getId());
-				} catch (TwitterException e) {
-					System.err.println("Error occurred while posting status!");
-				}
-			}
-		}
-	}
+    public static void pushTweet (Twitter twitter){
+        for (EmperorTweet tweet : emperorTweetsDao.findAll()) {
+            if (tweet.isApproved()) {
+                try {
+                    twitter.updateStatus(tweet.getTweet());
+                    emperorTweetsDao.delete(tweet.getId());
+                } catch (TwitterException e) {
+                    System.err.println("Error occurred while posting status!");
+                }
+
+            }
+        }
+    }
+
 
 
 }
