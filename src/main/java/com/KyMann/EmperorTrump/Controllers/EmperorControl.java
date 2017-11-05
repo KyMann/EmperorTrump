@@ -1,4 +1,4 @@
-package com.KyMann.EmperorTrump.Models.Controllers;
+package com.KyMann.EmperorTrump.Controllers;
 
 import com.KyMann.EmperorTrump.EmpTrumpDict;
 import com.KyMann.EmperorTrump.Models.EmperorTweet;

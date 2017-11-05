@@ -1,4 +1,4 @@
-package com.KyMann.EmperorTrump.Models.Controllers;
+package com.KyMann.EmperorTrump.Controllers;
 
 import com.KyMann.EmperorTrump.Models.EmperorTweet;
 import com.KyMann.EmperorTrump.Models.data.EmperorTweetsDao;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 @RequestMapping("Tweet")
-public class CheckController {
+public class ApprovalController {
 
     @Autowired
     private EmperorTweetsDao emperorTweetsDao;
