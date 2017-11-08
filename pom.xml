@@ -40,19 +40,19 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Hibernate framework -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>5.2.10.Final</version>
-		</dependency>
+		<!--&lt;!&ndash; Hibernate framework &ndash;&gt;-->
+		<!--<dependency>-->
+			<!--<groupId>org.hibernate</groupId>-->
+			<!--<artifactId>hibernate-core</artifactId>-->
+			<!--<version>5.2.10.Final</version>-->
+		<!--</dependency>-->
 
-		<!-- Hibernate library dependecy start -->
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>1.6.1</version>
-		</dependency>
+		<!--&lt;!&ndash; Hibernate library dependecy start &ndash;&gt;-->
+		<!--<dependency>-->
+			<!--<groupId>dom4j</groupId>-->
+			<!--<artifactId>dom4j</artifactId>-->
+			<!--<version>1.6.1</version>-->
+		<!--</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -1,7 +1,5 @@
 package com.KyMann.EmperorTrump.Models;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 
@@ -14,14 +12,13 @@ public class EmperorTweet {
 
     private boolean approved;
 
-    @Autowired
     @GeneratedValue
+    @javax.persistence.Id
     private int Id;
 
     public EmperorTweet() {}
 
     public EmperorTweet(String aTweet, int aChanges) {
-        super();
         tweet = aTweet;
         changes = aChanges;
         approved = false;
@@ -44,6 +41,10 @@ public class EmperorTweet {
 
     public boolean isApproved() {return approved;}
 
+    public void setApproved(boolean approved) { this.approved = approved;}
+
     public int getId() {return Id;}
+
+    public void setId(int id) {this.Id = id;}
 
 }
