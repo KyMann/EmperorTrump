@@ -10,6 +10,7 @@ import twitter4j.*;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class ScrapeTweetsController {
     EmperorTweetsDao emperorTweetsDao;
     private static List<Status> trumpTweetsList = new ArrayList<Status>();
 
+    @PostConstruct
     @Scheduled(fixedRate=86400000) //1 day
     private void importData() throws TwitterException {
         //Config builder sets up twitter communications
@@ -79,23 +81,23 @@ public class ScrapeTweetsController {
         //old tweets database built when server is started, //TODO: check to keep out duplicates when server is restarted
         if (trumpTweetsList.isEmpty()) {
             for (int pageNum = 1; pageNum < 2; pageNum++) {
-                Paging paging = new Paging(pageNum, 100); //Trump tweets 12 times a day
+                Paging paging = new Paging(pageNum, 12); //Trump tweets 12 times a day
                 //.get is past tweets
                 trumpTweetsList = twitter.getUserTimeline("@realDonaldTrump", paging);
             }
+        }
 
-            for (Status s : trumpTweetsList) {
-                //this runs the converter - DOES NOT RETURN STRING BUT OBJECT
-                EmperorTweet empTweet = empTrumpTranslator.insertEmperorWords(s.getText());
-                if (empTweet.getChanges() != 0) {
-                    //System.out.println(s.getUser().getName() + " " + s.getText());
-                    System.out.println(empTweet.getTweet() + ", " +  String.valueOf(empTweet.getChanges()));
+        for (Status s : trumpTweetsList) {
+            //this runs the converter - DOES NOT RETURN STRING BUT OBJECT
+            EmperorTweet empTweet = empTrumpTranslator.insertEmperorWords(s.getText());
+            if (empTweet.getChanges() != 0) {
+                //System.out.println(s.getUser().getName() + " " + s.getText());
+                System.out.println(empTweet.getTweet() + ", " +  String.valueOf(empTweet.getChanges()));
 
-                    emperorTweetsDao.save(empTweet);
-                    trumpTweetsList.clear();
-                }
+                emperorTweetsDao.save(empTweet);
             }
         }
+        trumpTweetsList.clear();
     }
 
     @Scheduled(fixedRate=7200000)

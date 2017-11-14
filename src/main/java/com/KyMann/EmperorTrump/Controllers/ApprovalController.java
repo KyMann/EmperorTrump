@@ -13,32 +13,32 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * Created by Kyle on 6/20/2017.
  */
 @Controller
-@RequestMapping("Tweet")
+@RequestMapping("tweet")
 public class ApprovalController {
 
     @Autowired
     private EmperorTweetsDao emperorTweetsDao;
 
-    @RequestMapping(value= "Approval")
-    public String index (Model model) {
+    @RequestMapping(value= "", method = RequestMethod.GET)
+    private String index (Model model) {
 
         model.addAttribute("tweets", emperorTweetsDao.findAll()); //TODO: paginate results for performance
         model.addAttribute("title", "Approve these Tweets");
 
-        return "Tweet/Approval";
+        return "tweet/approval.html";
     }
 
-    @RequestMapping(value = "Edit/{id}", method= RequestMethod.GET)
+    @RequestMapping(value = "edit/{id}", method= RequestMethod.GET)
     public String editTweet (Model model, @PathVariable long id) {
 
         EmperorTweet editedTweet = emperorTweetsDao.findOne((int)id);
 
         model.addAttribute("title", "Edit this Tweet");
 
-        return "Tweet/Edit";
+        return "tweet/edit.html";
     }
 
-    @RequestMapping(value = "Edit", method = RequestMethod.POST)
+    @RequestMapping(value = "edit", method = RequestMethod.POST)
     public String processEditTweet (Model model, String tweet, int tweetId) {
 
         EmperorTweet editedTweet = emperorTweetsDao.findOne(tweetId);
@@ -46,6 +46,6 @@ public class ApprovalController {
 
         emperorTweetsDao.save(editedTweet);
 
-        return "Tweet/Approval";
+        return "tweet/approval.html";
     }
 }
